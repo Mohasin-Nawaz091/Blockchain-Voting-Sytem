@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blockchain Voting System</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  .container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .candidates {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .candidate {
+    padding: 15px 30px;
+    border: 3px solid #333;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+  }
+  .candidate:hover {
+    background-color: #f0f0f0;
+  }
+  #result {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+  }
+  #voterId {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 3px solid #333;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 18px;
+  }
+  #voterIdBtn, #resetBtn, #confirmBtn {
+    width: 100%;
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  #voterIdBtn:hover, #resetBtn:hover, #confirmBtn:hover {
+    background-color: #45a049;
+  }
+  #dialog {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  #confirmBtn {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Blockchain Voting System</h1>
+  <div id="voterIdDiv">
+    <label for="voterId">Enter Voter ID:</label>
+    <input type="text" id="voterId" required>
+    <button id="voterIdBtn">Enter</button>
+  </div>
+  <div id="candidatesDiv" style="display: none;">
+    <div class="candidates">
+      <div class="candidate" id="candidate1" style="background-color: #3498db;">MNA</div>
+      <div class="candidate" id="candidate2" style="background-color: #e74c3c;">Ay.m</div>
+    </div>
+    <button id="resetBtn">Reset</button>
+    <button id="confirmBtn">Confirm Vote</button>
+  </div>
+  <div id="result" style="display: none;"></div>
+</div>
+<div id="dialog"></div>
+
+<script>
+let votes = {
+  candidate1: 0,
+  candidate2: 0
+};
+let usedIds = [];
+let votedIds = [];
+let selectedCandidate = '';
+
+document.getElementById('voterIdBtn').addEventListener('click', function() {
+  const voterId = document.getElementById('voterId').value.trim();
+  
+  if (voterId !== '') {
+    if (usedIds.includes(voterId)) {
+      alert('You have already cast a vote!');
+      return;
+    }
+
+    document.getElementById('voterIdDiv').style.display = 'none';
+    document.getElementById('candidatesDiv').style.display = 'flex';
+    document.getElementById('result').style.display = 'block';
+  } else {
+    alert('Please enter a valid Voter ID!');
+  }
+});
+
+document.getElementById('candidate1').addEventListener('click', function() {
+  selectedCandidate = 'candidate1';
+  document.getElementById('confirmBtn').style.display = 'block';
+});
+
+document.getElementById('candidate2').addEventListener('click', function() {
+  selectedCandidate = 'candidate2';
+  document.getElementById('confirmBtn').style.display = 'block';
+});
+
+document.getElementById('confirmBtn').addEventListener('click', function() {
+  votes[selectedCandidate]++;
+  const voterId = document.getElementById('voterId').value.trim();
+  usedIds.push(voterId);
+  votedIds.push({ id: voterId, candidate: selectedCandidate === 'candidate1' ? 'MNA' : 'Ay.m' });
+  updateResults();
+  resetVoting();
+  document.getElementById('voterIdDiv').style.display = 'block';
+  document.getElementById('candidatesDiv').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+});
+
+document.getElementById('resetBtn').addEventListener('click', function() {
+  resetVoting();
+});
+
+function resetVoting() {
+  selectedCandidate = '';
+  document.getElementById('confirmBtn').style.display = 'none';
+}
+
+function updateResults() {
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = `<h2>Vote Results:</h2>`;
+  resultDiv.innerHTML += `<p>MNA: ${votes.candidate1} votes</p>`;
+  resultDiv.innerHTML += `<p>Ay.m: ${votes.candidate2} votes</p>`;
+
+  const dialogDiv = document.getElementById('dialog');
+  dialogDiv.innerHTML = `<h2>Votes Casted:</h2>`;
+  votedIds.forEach((votedId) => {
+    dialogDiv.innerHTML += `<p>${votedId.id} voted for ${votedId.candidate}</p>`;
+  });
+}
+</script>
+
+</body>
+</html>
